@@ -21,7 +21,16 @@
       frame = window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
-        function(callback){ setTimeout(callback,15) },
+        function(callback){ 
+            //  make a timeStamp to callback,otherwise the arguments(now) will be undefined in ios4,5
+            var currTime = new Date().getTime(),
+                timeToCall = Math.max(0, 16 - (currTime - lastTime)),
+                timeOutId = setTimeout(function() {
+                    callback(currTime + timeToCall)
+                }, timeToCall);
+            lastTime = currTime + timeToCall
+            return timeOutId
+      },
       cancelScroll = function(){ abort() }
  
     // abort if already in progress or nothing to scroll 
