@@ -5,7 +5,7 @@
   // which is probably what you want
   var scrollToTopInProgress = false
  
-  $.fn.scrollToTop = function(position){
+  $.fn.scrollToTop = function(position, onEndCallback){
     var $this = this,
       targetY = position || 0,
       initialY = $this.scrollTop(),
@@ -21,8 +21,8 @@
       frame = window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
-        function(callback){ 
-            //  make a timeStamp to callback,otherwise the arguments(now) will be undefined in ios4,5
+        function(callback){
+            // make a timeStamp to callback,otherwise the arguments(now) will be undefined in ios4,5
             var currTime = new Date().getTime(),
                 timeToCall = Math.max(0, 16 - (currTime - lastTime)),
                 timeOutId = setTimeout(function() {
@@ -33,7 +33,7 @@
       },
       cancelScroll = function(){ abort() }
  
-    // abort if already in progress or nothing to scroll 
+    // abort if already in progress or nothing to scroll
     if (scrollToTopInProgress) return
     if (delta == 0) return
  
@@ -47,6 +47,8 @@
     function abort(){
       $this.off('touchstart', cancelScroll)
       scrollToTopInProgress = false
+      if (typeof onEndCallback == 'function')
+        onEndCallback.call(this, targetY)
     }
  
     // when there's a touch detected while scrolling is in progress, abort
